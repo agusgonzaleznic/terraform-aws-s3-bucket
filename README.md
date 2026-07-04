@@ -1,10 +1,37 @@
 # Terraform Module for AWS #
 
-Complete
+Terraform module that provisions an S3 bucket suitable for storing access logs
+(server access logs, ELB/ALB logs, CloudFront logs), with sane secure defaults:
+public access blocked, server-side encryption, TLS-only bucket policy and
+`log-delivery-write` ownership.
+
+## Compatibility
+
+This module is compatible with both [Terraform](https://www.terraform.io/) and
+[OpenTofu](https://opentofu.org/).
+
+| Tool      | Supported versions | Tested in CI |
+|-----------|--------------------|--------------|
+| Terraform | `>= 1.6`           | 1.15.7       |
+| OpenTofu  | `>= 1.6`           | 1.12.3       |
+| AWS provider | `>= 5.30` (works with 6.x) | latest |
+
+CI runs `init` / `validate` / `plan` for every example under **both** Terraform
+and OpenTofu on each pull request, so cross-compatibility is continuously verified.
 
 ## Usage
 
-Complete
+```hcl
+module "logs_bucket" {
+  source  = "agusgonzaleznic/s3-bucket/aws"
+  version = "~> 1.0"
+
+  name_prefix                = "my-app"
+  aws_principals_identifiers = ["arn:aws:iam::123456789012:root"]
+}
+```
+
+See [`examples/test`](examples/test) for a runnable example.
 
 ## Install pre commit hooks.
 

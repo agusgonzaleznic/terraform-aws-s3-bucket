@@ -1,3 +1,12 @@
+# Checks the format and plans examples/test with Terraform and with OpenTofu against LocalStack, on
+# every pull request and every push to main.
+#
+# The merge is the release. On a pull request, "Release / Check the version" says which version the
+# merge releases. On main, once the checks pass, the Release job tags the next version when the module,
+# its README, its LICENSE, examples/ or release.yml changed since the newest tag, and starts
+# release.yml on the tag, which publishes the GitHub release. The Terraform Registry reads the tag
+# through the repository webhook. Nobody pushes a tag by hand.
+
 name: Terraform / OpenTofu
 
 on:
@@ -6,15 +15,15 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     branches: [main]
-  release:
-    types: [published]
 
 permissions:
   contents: read
 
+# A pull request cancels its older runs. Runs on main never cancel a running one: it may be tagging a
+# version and waiting for its release.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # Latest stable releases. Bumped automatically by Renovate/Dependabot.
@@ -98,3 +107,46 @@ jobs:
       - name: Plan (mock, against LocalStack)
         run: ${{ matrix.tool }} plan -input=false
         working-directory: ${{ matrix.dir }}
+
+  # The version comes from the tags: the next minor version, or the next major one when a merged pull
+  # request has the label "breaking". The registry shows README.md, so it ships too.
+  check-version:
+    name: Release
+    if: github.event_name == 'pull_request'
+    uses: agusgonzaleznic/github-reusable-workflows/.github/workflows/version-tag.yml@3f7c141f6c330d47a854111aabf2b48d827d2cd1 # v1.10.0
+    permissions:
+      contents: read
+    with:
+      version-from-tags: true
+      release-paths: |
+        main.tf
+        variables.tf
+        outputs.tf
+        versions.tf
+        README.md
+        LICENSE
+        examples/
+        .github/workflows/release.yml
+
+  # Tags the next version on the merge when what ships changed, then runs release.yml on the tag and
+  # waits for it. A release that fails turns this run red.
+  release:
+    name: Release
+    if: github.event_name == 'push'
+    needs: [check-format, validations]
+    uses: agusgonzaleznic/github-reusable-workflows/.github/workflows/version-tag.yml@3f7c141f6c330d47a854111aabf2b48d827d2cd1 # v1.10.0
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: read
+    with:
+      version-from-tags: true
+      release-paths: |
+        main.tf
+        variables.tf
+        outputs.tf
+        versions.tf
+        README.md
+        LICENSE
+        examples/
+        .github/workflows/release.yml

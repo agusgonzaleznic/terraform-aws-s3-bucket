@@ -227,7 +227,7 @@ The plan is a mock: the example points the AWS provider at LocalStack and the pi
 credentials, so it shows the module is valid and plans on both tools. It doesn't apply anything and
 it doesn't prove behaviour in a real account. The module declares `>= 1.6` for both tools, and CI
 doesn't run the older versions. `init -upgrade` picks the newest AWS provider that the `>= 5.30`
-constraint allows. The last run on `main` (16 September 2026) installed AWS provider 6.64.0 and
+constraint allows. The run on `main` on 16 September 2026 installed AWS provider 6.64.0 and
 planned on both tools.
 
 Dependabot checks the Terraform files and the GitHub Actions weekly, and the repository has a Renovate
@@ -261,7 +261,7 @@ The merge of a pull request is the release. Nobody pushes a tag by hand.
 
 ```mermaid
 flowchart TD
-    A["Open a pull request"] --> B{"Does it change the module's .tf files,<br/>examples/, README.md or LICENSE?"}
+    A["Open a pull request"] --> B{"Does it change the module's .tf files,<br/>examples/, README.md, LICENSE<br/>or release.yml?"}
     B -->|no| C["Merge: nothing is released"]
     B -->|yes| D["Merge to main"]
     D --> E["Format check and both plans pass on main"]

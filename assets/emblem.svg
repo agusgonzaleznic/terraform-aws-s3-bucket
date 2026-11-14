@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="t">
+  <title id="t">A bucket with log lines inside, the emblem of the S3 access logs bucket module</title>
+  <rect width="256" height="256" rx="56" fill="#1A1D23"/>
+  <g fill="none" stroke="#FAFAFA" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="128" cy="84" rx="62" ry="17"/>
+    <path d="M66 84 L82 190 Q128 214 174 190 L190 84"/>
+    <path d="M100 128 H156"/>
+    <path d="M104 160 H152"/>
+  </g>
+  <path d="M96 144 H160" fill="none" stroke="#DE3412" stroke-width="10" stroke-linecap="round"/>
+</svg>
